@@ -182,7 +182,8 @@ I write significant decisions down as **architecture decision records (ADRs)**: 
 
 **Defence in depth for running strangers' SQL.** The real boundary is a least-privilege Postgres role that the API checks at boot, refusing to start if the role is over-privileged. On top of it sit a disposable schema per grade that is always rolled back, an allowlist built on the real Postgres parser, resource limits and rate limits, so a bug in one layer is contained by the others. *Trade-off:* building an isolated sandbox adds latency to every submission. That's acceptable for an explicit submit, and the price of real isolation.
 
----|---|---|
+| Record | Decision | Why and trade-off |
+|---|---|---|
 | 0001 | Grade on query plans, not wall-clock time | Plans are deterministic and explain *which* condition failed. The cost: thresholds depend on planner statistics, so datasets must be reproducible (0005) |
 | 0002 | Instant client grading, authoritative server grading, one shared grader | Feedback in milliseconds while nobody can forge a grade. Two engines (PGlite and Postgres) can disagree on edge cases, so a dual verifier keeps them aligned |
 | 0003 | Defence in depth for executing untrusted SQL | A least-privilege role is the real boundary; schema isolation, an AST allowlist, resource limits and rate limits each contain the others' bugs. Each submission pays some latency for real isolation |
